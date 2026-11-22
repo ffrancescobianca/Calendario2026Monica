@@ -120,6 +120,18 @@ main:not(.hidden){padding-top:54px}
 #lock p{margin:0;color:var(--muted)}
 #lock input{font:inherit;font-size:1.1rem;padding:12px 16px;border-radius:99px;border:2px solid var(--gold);background:var(--card);color:var(--ink);text-align:center;width:min(80vw,280px)}
 #lock .err{color:#ff8a93;min-height:1.2em}
+#gate{overflow:hidden;background:linear-gradient(rgba(18,10,12,.4),rgba(18,10,12,.68)),url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2764%27%20height%3D%2732%27%3E%3Crect%20width%3D%2764%27%20height%3D%2732%27%20fill%3D%27%23cfc2b2%27%2F%3E%3Crect%20x%3D%271%27%20y%3D%271%27%20width%3D%2730%27%20height%3D%2714%27%20fill%3D%27%23a4503e%27%2F%3E%3Crect%20x%3D%2733%27%20y%3D%271%27%20width%3D%2730%27%20height%3D%2714%27%20fill%3D%27%2396432f%27%2F%3E%3Crect%20x%3D%27-15%27%20y%3D%2717%27%20width%3D%2730%27%20height%3D%2714%27%20fill%3D%27%239a4636%27%2F%3E%3Crect%20x%3D%2717%27%20y%3D%2717%27%20width%3D%2730%27%20height%3D%2714%27%20fill%3D%27%23ad5a46%27%2F%3E%3Crect%20x%3D%2749%27%20y%3D%2717%27%20width%3D%2730%27%20height%3D%2714%27%20fill%3D%27%239a4636%27%2F%3E%3C%2Fsvg%3E");background-size:auto,80px 40px}
+#gate::after{content:"";position:absolute;left:-5%;right:-5%;bottom:0;height:90px;pointer-events:none;background:radial-gradient(ellipse 55% 100% at 22% 100%,#fff 97%,transparent 100%),radial-gradient(ellipse 65% 100% at 78% 100%,#eef4fa 97%,transparent 100%)}
+#gate h2,#gate p{text-shadow:0 2px 8px rgba(0,0,0,.7)}
+#gate p{color:#f6e8d2}
+.cd{margin-top:6px;color:var(--gold);font-family:"Playfair Display",Georgia,serif;font-size:1.05rem}
+.cd{display:flex;gap:10px;justify-content:center;margin-top:10px}
+.cd div{min-width:62px;padding:10px 6px 6px;border-radius:14px;background:var(--card);border:2px solid var(--gold);box-shadow:0 6px 14px var(--shadow)}
+.cd b{display:block;font-family:"Playfair Display",Georgia,serif;font-size:1.9rem;font-weight:600;color:var(--gold);font-variant-numeric:tabular-nums;line-height:1}
+.cd small{display:block;margin-top:4px;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.sign{position:absolute;right:1%;top:calc(55% + 21px);width:38%;padding:7px 4px;border-radius:6px;background:#f6e8d2;color:#8a2230;border:2px solid var(--gold);font-family:"Playfair Display",Georgia,serif;font-size:.72rem;line-height:1.2;text-align:center;box-shadow:0 4px 8px rgba(0,0,0,.4);transform-origin:64% -14px;animation:sway 3s ease-in-out infinite}
+.sign::before{content:"";position:absolute;right:36%;top:-16px;width:2px;height:14px;background:var(--gold)}
+@keyframes sway{0%,100%{transform:rotate(4deg)}50%{transform:rotate(-4deg)}}
 .modal{position:fixed;inset:0;z-index:5;background:rgba(20,8,10,.6);display:none;align-items:center;justify-content:center;padding:20px}
 .modal.on{display:flex}
 .card{background:var(--card);border:2px solid var(--gold);border-radius:22px;max-width:380px;width:100%;
@@ -141,11 +153,12 @@ footer{text-align:center;color:var(--muted);margin-top:28px;font-size:.9rem}
   <input id="code" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Parola segreta">
   <p class="err" id="err"></p>
   <button class="btn" id="go">Entra</button>
+  <div class="cd" id="cd" aria-label="Conto alla rovescia"></div>
 </div>
 <div id="gate" role="button" tabindex="0" aria-label="Apri la porta">
   <h2>Calendario dell’Avvento 2026 di <span class="rd">Monica</span></h2>
-  <div class="frame"><div class="inside">✨</div><div class="leaf"><span aria-hidden="true">🎄</span></div></div>
-  <p>Bussa per entrare</p>
+  <div class="frame"><div class="inside">✨</div><div class="leaf"><span aria-hidden="true">🎄</span><div class="sign">Bussa<br>per entrare</div></div></div>
+  
 </div>
 <main class="hidden" id="main">
   <header>
@@ -158,7 +171,7 @@ footer{text-align:center;color:var(--muted);margin-top:28px;font-size:.9rem}
     </div>
   </header>
   <section class="grid" id="grid" aria-label="Caselle del calendario"></section>
-  <footer>Fatto con tanto affetto, per te, Monica 🤍</footer>
+  <footer>E uora nun ciccari nenti pi 3 misi</footer>
 </main>
 <div class="modal" id="modal" role="dialog" aria-modal="true">
   <div class="card">
@@ -255,6 +268,17 @@ function tryCode(){
 }
 $("go").onclick=tryCode;
 $("code").onkeydown=e=>{if(e.key==="Enter")tryCode()};
+const T=new Date(2026,11,1,0,0,0);
+function tick(){
+  const ms=Math.max(0,T-new Date()),t=Math.floor(ms/1000),p=n=>String(n).padStart(2,"0");
+  const v=[[p(Math.floor(t/86400)),"giorni"],[p(Math.floor(t%86400/3600)),"ore"],[p(Math.floor(t%3600/60)),"min"],[p(t%60),"sec"]];
+  $("cd").innerHTML=v.map(a=>"<div><b>"+a[0]+"</b><small>"+a[1]+"</small></div>").join("");
+}
+tick();setInterval(tick,1000);
+const gs=document.createElement("div");gs.className="snow";gs.setAttribute("aria-hidden","true");
+for(let i=0;i<34;i++){const f=document.createElement("i");f.textContent=i%3?"❄":"✦";
+  f.style.cssText="left:"+Math.random()*100+"%;font-size:"+(10+Math.random()*14)+"px;animation-duration:"+(7+Math.random()*8)+"s;animation-delay:-"+Math.random()*12+"s";gs.appendChild(f)}
+$("gate").prepend(gs);
 render();
 </script>
 </body>
