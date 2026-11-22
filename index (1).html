@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Calendario dell’Avvento 2026 di Monica</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,500&family=Nunito:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#f8ecdc; --bg2:#f1dcc2; --ink:#4a2326; --muted:#8a5a52;
+  --door:#9c2f3a; --door2:#7d222d; --gold:#d9a441; --green:#2f5d46;
+  --card:#fff8ee; --shadow:rgba(74,35,38,.25);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#16241d; --bg2:#0e1914; --ink:#f6e8d2; --muted:#c9a98e;
+    --door:#b13a46; --door2:#8a2833; --gold:#f0bf62; --green:#3f7a5d;
+    --card:#22362b; --shadow:rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#16241d; --bg2:#0e1914; --ink:#f6e8d2; --muted:#c9a98e;
+  --door:#b13a46; --door2:#8a2833; --gold:#f0bf62; --green:#3f7a5d;
+  --card:#22362b; --shadow:rgba(0,0,0,.5);
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--ink);font-family:"Nunito",system-ui,sans-serif;
+  background:radial-gradient(circle at 50% -10%,var(--bg),var(--bg2) 90%) fixed;overflow-x:hidden}
+.snow{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.snow i{position:absolute;top:-10px;color:var(--gold);opacity:.7;font-style:normal;animation:fall linear infinite}
+@keyframes fall{to{transform:translateY(110vh) translateX(30px) rotate(200deg)}}
+@media (prefers-reduced-motion:reduce){.snow{display:none}}
+main{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:28px 18px 48px}
+header{text-align:center;margin-bottom:22px}
+.garland{font-size:1.5rem;letter-spacing:.35em;white-space:nowrap;overflow:hidden}
+h1{font-family:"Playfair Display",Georgia,serif;font-size:clamp(2rem,8vw,3.2rem);margin:.2em 0 0;line-height:1.1}
+h1 em{color:var(--door);font-style:italic}
+.sub{color:var(--muted);margin:.6em auto 0;max-width:34ch}
+.bar{display:flex;gap:10px;justify-content:center;align-items:center;margin:18px 0 6px;flex-wrap:wrap}
+.pill{background:var(--card);border:1px solid var(--gold);border-radius:99px;padding:6px 14px;font-size:.9rem}
+button{font:inherit;cursor:pointer}
+.btn{background:var(--green);color:#fff;border:0;border-radius:99px;padding:8px 16px}
+.btn:focus-visible,.door:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:clamp(62px,17vw,100px);grid-auto-flow:dense;gap:10px}
+.door{width:100%;height:100%;padding:0;border:0;border-radius:16px;position:relative;color:#fff8ee;
+  background:repeating-linear-gradient(45deg,var(--door) 0 8px,var(--door2) 8px 16px);
+  box-shadow:0 6px 14px var(--shadow),inset 0 0 0 3px var(--gold);
+  font-family:"Playfair Display",Georgia,serif;font-size:clamp(1.3rem,6vw,2rem);
+  transition:transform .2s}
+.door:not(:disabled):hover{transform:translateY(-3px) rotate(-1deg)}
+.door:disabled{cursor:not-allowed;filter:saturate(.55) brightness(.85)}
+.door small{position:absolute;bottom:5px;left:0;right:0;font-family:"Nunito",sans-serif;font-size:.7rem;opacity:.9}
+.door.open{background:var(--card);color:var(--ink);box-shadow:0 3px 8px var(--shadow),inset 0 0 0 3px var(--green)}
+.door.open span{font-size:1.5rem}
+.door.today:not(.open){animation:glow 2s ease-in-out infinite}
+@keyframes glow{50%{box-shadow:0 0 0 4px var(--gold),0 6px 18px var(--shadow)}}
+.s-arch{border-radius:999px 999px 12px 12px}
+.s-tall{grid-row:span 2;border-radius:999px 999px 12px 12px}
+.s-wide{grid-column:span 2;border-radius:22px}
+.s-round{border-radius:50%}
+.s-square{border-radius:8px}
+.s-big{grid-column:span 2;grid-row:span 2;border-radius:999px 999px 16px 16px;font-size:clamp(2rem,10vw,3.4rem)}
+.door::after{content:"";position:absolute;right:14%;top:56%;width:6px;height:6px;border-radius:50%;background:var(--gold)}
+.s-round::after,.door.open::after{display:none}
+body.locked{overflow:hidden;height:100vh}
+main.hidden{opacity:0;visibility:hidden;height:0;overflow:hidden;padding:0}
+main{transition:opacity 1s}
+#gate{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;
+  background:radial-gradient(circle at 50% -10%,var(--bg),var(--bg2) 90%);cursor:pointer;transition:opacity .8s;padding:20px;text-align:center}
+#gate.gone{opacity:0;pointer-events:none}
+#gate h2{font-family:"Playfair Display",Georgia,serif;margin:0;font-size:clamp(1.3rem,5vw,1.8rem)}
+#gate p{margin:0;color:var(--muted);animation:glow2 2s ease-in-out infinite}
+@keyframes glow2{50%{opacity:.4}}
+.frame{position:relative;width:min(68vw,270px);aspect-ratio:3/5;border:8px solid var(--gold);border-radius:999px 999px 10px 10px;perspective:900px;box-shadow:0 14px 40px var(--shadow)}
+.inside{position:absolute;inset:0;border-radius:999px 999px 2px 2px;display:flex;align-items:center;justify-content:center;font-size:3.5rem;
+  background:radial-gradient(circle at 50% 60%,#ffe2a0,#e8a64a 70%)}
+.leaf{position:absolute;inset:0;border-radius:999px 999px 2px 2px;transform-origin:left center;transition:transform 1.2s ease;
+  background:repeating-linear-gradient(45deg,var(--door) 0 8px,var(--door2) 8px 16px);box-shadow:inset 0 0 0 4px var(--gold);display:flex;align-items:center;justify-content:center;font-size:3rem}
+.leaf::after{content:"";position:absolute;right:12%;top:55%;width:14px;height:14px;border-radius:50%;background:var(--gold)}
+#gate.opening .leaf{transform:rotateY(80deg);filter:brightness(.6)}
+.leaf{transition:transform 1.2s ease,filter 1.2s}
+#gate h2{color:var(--ink)}
+#gate .rd{color:#ff4d5a;text-shadow:0 2px 8px rgba(0,0,0,.55)}
+:root:root{--ink:#f6e8d2;--muted:#e3c9a6;--card:#22362b;--gold:#f0bf62;--door:#b8323f;--door2:#8a2230;--bg:#245b43;--bg2:#0b241a;--green:#3f7a5d;--shadow:rgba(0,0,0,.5);color-scheme:dark}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background-image:radial-gradient(rgba(240,191,98,.2) 1.5px,transparent 2.5px),radial-gradient(rgba(200,50,60,.22) 2.5px,transparent 3.5px);background-size:46px 46px;background-position:0 0,23px 23px}
+#theme{display:none}
+h1 em{color:var(--gold)}
+.snow i{color:#fff}
+main:not(.hidden){padding-top:54px}
+.lights{position:fixed;top:0;left:0;right:0;z-index:6;display:flex;justify-content:space-around;padding-top:env(safe-area-inset-top,0px);pointer-events:none}
+.lights::before{content:"";position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 6px);height:2px;background:#06150f}
+.lights i{display:block;width:11px;height:16px;border-radius:50% 50% 50% 50%/35% 35% 65% 65%;background:var(--c);box-shadow:0 0 10px 2px var(--c);animation:tw 1.6s ease-in-out infinite}
+@keyframes tw{50%{opacity:.35}}
+.door{perspective:700px;border:3px solid var(--gold);background:none;box-shadow:0 8px 16px var(--shadow)}
+.door::after{display:none}
+.door.open{background:none;color:#fff8ee;box-shadow:0 8px 16px var(--shadow)}
+.door:not(:disabled):hover{transform:none}
+.door i{position:absolute;inset:0;border-radius:inherit;font-style:normal;display:flex;align-items:center;justify-content:center}
+.in{background:radial-gradient(circle at 50% 75%,#ffe2a0,#e8a64a 75%);font-size:clamp(1.4rem,6vw,2.2rem)}
+.lf{transform-origin:left center;transition:transform .8s cubic-bezier(.3,.7,.3,1);background:linear-gradient(135deg,var(--door),var(--door2));box-shadow:inset 0 0 0 2px rgba(255,225,160,.5)}
+.lf::before{content:"";position:absolute;inset:14% 18%;border:2px solid rgba(255,225,160,.45);border-radius:6px}
+.lf::after{content:"";position:absolute;right:12%;top:54%;width:7px;height:7px;border-radius:50%;background:var(--gold)}
+.lf b{font-weight:400;position:relative;z-index:1}
+.door.open .lf{transform:rotateY(82deg);filter:brightness(.6)}
+.lf{transition:transform .8s cubic-bezier(.3,.7,.3,1),filter .8s}
+.door{overflow:hidden}
+.door:not(.open):not(:disabled):hover .lf{transform:rotateY(16deg)}
+.grid{grid-auto-rows:auto;grid-auto-flow:row;grid-template-columns:repeat(4,1fr);gap:16px 12px}
+.door.door{grid-row:auto;grid-column:auto;height:auto;aspect-ratio:3/4;border-radius:999px 999px 10px 10px;font-size:clamp(1.2rem,5.5vw,1.7rem)}
+.door:nth-child(even) .lf{background:linear-gradient(135deg,#2f6e50,#1b4a35)}
+.lf::before{border-radius:999px 999px 4px 4px;inset:16% 20% 12%}
+@media (min-width:600px){.grid{grid-template-columns:repeat(6,1fr)}}
+.modal{position:fixed;inset:0;z-index:5;background:rgba(20,8,10,.6);display:none;align-items:center;justify-content:center;padding:20px}
+.modal.on{display:flex}
+.card{background:var(--card);border:2px solid var(--gold);border-radius:22px;max-width:380px;width:100%;
+  padding:28px 24px;text-align:center;box-shadow:0 20px 50px var(--shadow);animation:pop .35s ease}
+@keyframes pop{from{transform:scale(.85) rotate(-3deg);opacity:0}}
+.card .n{color:var(--muted);letter-spacing:.2em;font-size:.8rem;text-transform:uppercase}
+.card .e{font-size:3.2rem;margin:.2em 0}
+.card h2{font-family:"Playfair Display",Georgia,serif;margin:.1em 0 .4em}
+.card p{line-height:1.6;margin:0 0 1.2em}
+footer{text-align:center;color:var(--muted);margin-top:28px;font-size:.9rem}
+</style>
+</head>
+<body class="locked">
+<div class="snow" id="snow" aria-hidden="true"></div>
+<div id="gate" role="button" tabindex="0" aria-label="Apri la porta">
+  <h2>Calendario dell’Avvento 2026 di <span class="rd">Monica</span></h2>
+  <div class="frame"><div class="inside">✨</div><div class="leaf"><span aria-hidden="true">🎄</span></div></div>
+  <p>Bussa per entrare</p>
+</div>
+<main class="hidden" id="main">
+  <header>
+    <div class="garland" aria-hidden="true">🎄✨🕯️✨🎄✨🕯️✨🎄</div>
+    <h1>Calendario dell’Avvento 2026<br>di <em>Monica</em></h1>
+    <p class="sub">24 piccole sorprese, una al giorno, per scaldare questo Natale. ☕</p>
+    <div class="bar">
+      <span class="pill" id="count">0 / 24 aperte</span>
+      <button class="btn" id="theme" aria-label="Cambia tema">🌙</button>
+    </div>
+  </header>
+  <section class="grid" id="grid" aria-label="Caselle del calendario"></section>
+  <footer>Fatto con tanto affetto, per te, Monica 🤍</footer>
+</main>
+<div class="modal" id="modal" role="dialog" aria-modal="true">
+  <div class="card">
+    <div class="n" id="mn"></div><div class="e" id="me"></div>
+    <h2 id="mt"></h2><p id="mp"></p>
+    <button class="btn" id="close">Grazie 💌</button>
+  </div>
+</div>
+<script>
+const M=[
+["🕯️","Prima candela","Accendi una candela profumata e dichiara ufficialmente aperto il Natale. Si parte!","🎄 Da fare"],
+["💕","Sei il mio regalo","Non serve nessun pacco sotto l’albero: il regalo più bello di quest’anno sei tu, Monica.","💌 Dedica"],
+["🦌","Capelli da renna","Hai speso un patrimonio in maschere per capelli. Le renne hanno chiesto i diritti: la criniera è loro.","😜 Si scherza"],
+["✨","Le tue luci","Tra tutte le luci di dicembre, la mia preferita è il tuo sorriso.","💌 Dedica"],
+["☕","Cioccolata calda","Preparala densa, con panna e cannella. Poi un biscotto, due, o tutto il pacco: tanto nessuno sta contando.","🎄 Da fare"],
+["🤍","Casa","Con te qualunque posto diventa casa, anche una panchina al freddo con le mani congelate… forse.","💌 Dedica"],
+["🥧","Pancia da panettone","Hai detto “solo una fetta” tre fette fa. La bilancia ha chiesto un periodo di lutto fino al 7 gennaio.","😜 Si scherza"],
+["🎂","Buon compleanno, Monica","Un anno in più sulle spalle, ma tranquilla: il vino migliora con l’età. Tu stai ancora lavorando sul processo.","🎂 Compleanno"],
+["🛁","Un bagno caldo","Candele, schiuma e musica soft: oggi ti fai un bagno caldo lungo quanto vuoi. Il mondo può aspettare.","🎄 Da fare"],
+["💌","Due righe per te","Sei la persona con cui voglio condividere ogni Natale, ogni risata e ogni plaid.","💌 Dedica"],
+["🔴","Rudolph","Il brufolo sul naso ha iniziato a fare luce meglio delle lucine. Rudolph ti ha già denunciata per plagio.","😜 Si scherza"],
+["🫶","Grazie","Grazie per la pazienza, gli abbracci e il modo in cui rendi tutto più dolce.","💌 Dedica"],
+["🍪","Biscotti allo zenzero","Impasta, taglia a forma di omino e decidi a chi staccare la testa per primo. Con affetto.","🎄 Da fare"],
+["🌙","Notti d’inverno","Le sere più fredde sono le mie preferite, perché hanno il tuo calore dentro.","💌 Dedica"],
+["🎤","Concerto di Natale","Hai provato a cantare Jingle Bells. I vicini hanno chiamato i pompieri e il cane ha chiesto asilo politico.","😜 Si scherza"],
+["💖","Il mio posto felice","È dove sei tu, con una tazza calda in mano e un plaid addosso. Tutto il resto può aspettare.","💌 Dedica"],
+["🎁","Il pacchetto 17","Poi non dirmi che non ti faccio mai regali: oggi apri il pacchetto corrispondente. Prego, non c’è di che.","🎁 Regalo"],
+["🌹","Ti scelgo ancora","Ogni giorno e ogni dicembre, ti scelgo ancora. E sempre di più.","💌 Dedica"],
+["🧅","Matrioska di Natale","Con venti strati addosso sembri una matrioska. Stiamo ancora cercando la vera Monica, abbi pazienza.","😜 Si scherza"],
+["🥰","Tu, sempre tu","Il Natale mi piace perché mi ricorda quanto sono fortunato ad averti.","💌 Dedica"],
+["🎂","Oggi è il mio giorno","Oggi è il mio compleanno. Il regalo più bello sei tu, ma uno vero, con il fiocco, non mi dispiacerebbe, eh.","🎂 Compleanno"],
+["⭐","Stella polare","Se mi perdo, la mia stella polare sei tu. Senza di te le luci sarebbero solo lampadine.","💌 Dedica"],
+["🎅","Letterina a Babbo Natale","Hai chiesto una voce intonata e una pancia piatta. Lui ha risposto: “Sono un elfo, non un mago”.","😜 Si scherza"],
+["❤️","Vigilia, Monica","Buon Natale, amore mio. Che sia pieno di luce, calore e abbracci. Ti voglio un mondo di bene.","💌 Dedica"]
+];
+
+const $=id=>document.getElementById(id);
+let opened=[],prev=false;
+const SH=["tall","arch","round","wide","square","big","arch","tall","round","square","wide","arch"];
+try{opened=JSON.parse(localStorage.getItem("monica-avvento-2026")||"[]")}catch(e){}
+const now=new Date(),todayD=now.getMonth()===11?now.getDate():(now.getFullYear()>0&&now.getMonth()===0?99:0);
+opened=opened.filter(d=>d<=todayD);
+const save=()=>{try{localStorage.setItem("monica-avvento-2026",JSON.stringify(opened))}catch(e){}};
+function render(){
+  const g=$("grid");g.innerHTML="";
+  M.forEach((m,i)=>{
+    const d=i+1,isOpen=opened.includes(d),can=prev||d<=todayD;
+    const b=document.createElement("button");
+    b.className="door s-"+SH[i%12]+(isOpen?" open":"")+(d===todayD?" today":"");
+    b.disabled=!can;
+    b.setAttribute("aria-label","Casella "+d+(can?"":", ancora chiusa"));
+    b.innerHTML='<i class="in">'+m[0]+'</i><i class="lf"><b>'+d+'</b><small>'+(can?'':'🔒')+'</small></i>';
+    b.onclick=()=>show(d);
+    g.appendChild(b);
+  });
+  $("count").textContent=opened.length+" / 24 aperte";
+}
+function show(d){
+  const m=M[d-1];
+  $("mn").textContent=d+" dicembre · "+m[3];$("me").textContent=m[0];
+  $("mt").textContent=m[1];$("mp").textContent=m[2];
+  const isNew=!opened.includes(d);
+  if(isNew){opened.push(d);save();$("grid").children[d-1].classList.add("open");$("count").textContent=opened.length+" / 24 aperte"}
+  setTimeout(()=>$("modal").classList.add("on"),isNew?850:0);
+}
+$("close").onclick=()=>$("modal").classList.remove("on");
+$("modal").onclick=e=>{if(e.target.id==="modal")$("modal").classList.remove("on")};
+$("theme").onclick=()=>{
+  const r=document.documentElement,dark=r.dataset.theme?r.dataset.theme==="dark":matchMedia("(prefers-color-scheme: dark)").matches;
+  r.dataset.theme=dark?"light":"dark";$("theme").textContent=dark?"🌙":"☀️";
+};
+const L=document.createElement("div");L.className="lights";L.setAttribute("aria-hidden","true");
+const cols=["#ff4d5a","#f0bf62","#5be08a","#6bb8ff"];
+for(let i=0;i<14;i++){const b=document.createElement("i");b.style.cssText="--c:"+cols[i%4]+";margin-top:"+(i%2?14:4)+"px;animation-delay:-"+(i*0.37)+"s";L.appendChild(b)}
+document.body.appendChild(L);
+const s=$("snow");
+for(let i=0;i<22;i++){const f=document.createElement("i");f.textContent=i%3?"❄":"✦";
+  f.style.cssText="left:"+Math.random()*100+"%;font-size:"+(10+Math.random()*14)+"px;animation-duration:"+(9+Math.random()*10)+"s;animation-delay:-"+Math.random()*15+"s";s.appendChild(f)}
+function enter(){
+  const g=$("gate");if(g.classList.contains("opening"))return;
+  g.classList.add("opening");
+  setTimeout(()=>{$("main").classList.remove("hidden");document.body.classList.remove("locked");g.classList.add("gone")},1100);
+  setTimeout(()=>{g.style.display="none"},1900);
+}
+$("gate").onclick=enter;
+$("gate").onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();enter()}};
+render();
+</script>
+</body>
+</html>
