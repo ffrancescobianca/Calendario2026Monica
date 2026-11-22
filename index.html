@@ -115,6 +115,11 @@ main:not(.hidden){padding-top:54px}
 .door:nth-child(even) .lf{background:linear-gradient(135deg,#2f6e50,#1b4a35)}
 .lf::before{border-radius:999px 999px 4px 4px;inset:16% 20% 12%}
 @media (min-width:600px){.grid{grid-template-columns:repeat(6,1fr)}}
+#lock{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;text-align:center;background:radial-gradient(circle at 50% -10%,var(--bg),var(--bg2) 90%)}
+#lock h2{font-family:"Playfair Display",Georgia,serif;margin:0;font-size:clamp(1.3rem,5vw,1.8rem)}
+#lock p{margin:0;color:var(--muted)}
+#lock input{font:inherit;font-size:1.1rem;padding:12px 16px;border-radius:99px;border:2px solid var(--gold);background:var(--card);color:var(--ink);text-align:center;width:min(80vw,280px)}
+#lock .err{color:#ff8a93;min-height:1.2em}
 .modal{position:fixed;inset:0;z-index:5;background:rgba(20,8,10,.6);display:none;align-items:center;justify-content:center;padding:20px}
 .modal.on{display:flex}
 .card{background:var(--card);border:2px solid var(--gold);border-radius:22px;max-width:380px;width:100%;
@@ -129,6 +134,14 @@ footer{text-align:center;color:var(--muted);margin-top:28px;font-size:.9rem}
 </head>
 <body class="locked">
 <div class="snow" id="snow" aria-hidden="true"></div>
+<div id="lock">
+  <div style="font-size:3rem">🔒</div>
+  <h2>Solo per te, Monica</h2>
+  <p>Scrivi la parola segreta per entrare</p>
+  <input id="code" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Parola segreta">
+  <p class="err" id="err"></p>
+  <button class="btn" id="go">Entra</button>
+</div>
 <div id="gate" role="button" tabindex="0" aria-label="Apri la porta">
   <h2>Calendario dell’Avvento 2026 di <span class="rd">Monica</span></h2>
   <div class="frame"><div class="inside">✨</div><div class="leaf"><span aria-hidden="true">🎄</span></div></div>
@@ -232,6 +245,16 @@ function enter(){
 }
 $("gate").onclick=enter;
 $("gate").onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();enter()}};
+const CODE="YnJvbnRvbGE=";
+const hideLock=()=>{$("lock").style.display="none"};
+try{if(localStorage.getItem("monica-ok")===CODE)hideLock()}catch(e){}
+function tryCode(){
+  let good=false;try{good=btoa($("code").value.trim().toLowerCase())===CODE}catch(e){}
+  if(good){try{localStorage.setItem("monica-ok",CODE)}catch(e){}hideLock()}
+  else $("err").textContent="Parola sbagliata, riprova 🙈";
+}
+$("go").onclick=tryCode;
+$("code").onkeydown=e=>{if(e.key==="Enter")tryCode()};
 render();
 </script>
 </body>
