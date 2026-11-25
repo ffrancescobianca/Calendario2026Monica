@@ -145,6 +145,18 @@ main:not(.hidden){padding-top:54px}
 .card h2{font-family:"Playfair Display",Georgia,serif;margin:.1em 0 .4em}
 .card p{line-height:1.6;margin:0 0 1.2em}
 footer{text-align:center;color:var(--muted);margin-top:28px;font-size:.9rem}
+
+/* ===== Overlay natalizi ===== */
+#fx{position:fixed;inset:0;z-index:4;pointer-events:none;overflow:hidden}
+#fx .it{position:absolute;left:0;top:0;line-height:1;white-space:nowrap;will-change:transform;filter:drop-shadow(0 4px 6px rgba(0,0,0,.45))}
+#fx .sl{position:relative;display:inline-block}
+#fx .sl em{position:absolute;left:18%;top:-34%;font-style:normal;font-size:.62em}
+#fx .rud{position:relative;display:inline-block}
+#fx .rud::after{content:"";position:absolute;left:3%;top:46%;width:.2em;height:.2em;border-radius:50%;background:#ff2a3a;box-shadow:0 0 .3em .12em #ff2a3a,0 0 .9em .3em rgba(255,60,70,.55);animation:nose 1s ease-in-out infinite}
+@keyframes nose{50%{opacity:.55}}
+#fx .bub{position:absolute;padding:4px 10px;border-radius:14px;background:#f6e8d2;color:#8a2230;border:2px solid var(--gold);font:600 .85rem/1.2 "Playfair Display",Georgia,serif;white-space:nowrap}
+#fx .stars{position:absolute;inset:-20%;pointer-events:none}
+@media (prefers-reduced-motion:reduce){#fx{display:none}}
 </style>
 </head>
 <body class="locked">
@@ -166,7 +178,7 @@ footer{text-align:center;color:var(--muted);margin-top:28px;font-size:.9rem}
 <main class="hidden" id="main">
   <header>
     <div class="garland" aria-hidden="true">🎄✨🕯️✨🎄✨🕯️✨🎄</div>
-    <h1>Calendario dell’Avvento 2026<br>di <em>Monica</em></h1>
+    <h1>Calendario dell’Avvento 2026.<br><em>Buon Natale amore mio!</em></h1>
     <p class="sub">24 piccole sorprese, una al giorno, per scaldare questo Natale. ☕</p>
     <div class="bar">
       <span class="pill" id="count">0 / 24 aperte</span>
@@ -212,6 +224,83 @@ const M=[
 ];
 
 const $=id=>document.getElementById(id);
+/* ===== Suoni (sintetizzati, nessun file esterno) ===== */
+const SFX=(function(){
+  let c=null,master=null;
+  function init(){
+    try{
+      if(!c){const A=window.AudioContext||window.webkitAudioContext;if(!A)return;c=new A();master=c.createGain();master.gain.value=.8;master.connect(c.destination)}
+      if(c.state==="suspended")c.resume();
+    }catch(e){}
+  }
+  ["pointerdown","touchstart","keydown","click"].forEach(ev=>addEventListener(ev,init,{passive:true}));
+  const ok=()=>c&&c.state!=="closed";
+  function env(g,t,a,peak,d){g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(peak,t+a);g.gain.exponentialRampToValueAtTime(0.0001,t+a+d)}
+  function noise(t,d,freq,peak){
+    const n=Math.floor(c.sampleRate*d),buf=c.createBuffer(1,n,c.sampleRate),ch=buf.getChannelData(0);
+    for(let i=0;i<n;i++)ch[i]=Math.random()*2-1;
+    const s=c.createBufferSource();s.buffer=buf;
+    const f=c.createBiquadFilter();f.type="lowpass";f.frequency.value=freq;
+    const g=c.createGain();env(g,t,.003,peak,d);
+    s.connect(f);f.connect(g);g.connect(master);s.start(t);s.stop(t+d+.05);
+  }
+  // toc toc toc alla porta
+  function knock(){
+    if(!ok())return;
+    [0,.26,.52].forEach((dt,i)=>{
+      const t=c.currentTime+.02+dt,o=c.createOscillator(),g=c.createGain();
+      o.type="triangle";o.frequency.setValueAtTime(190,t);o.frequency.exponentialRampToValueAtTime(70,t+.12);
+      env(g,t,.004,i===2?.9:.75,.16);o.connect(g);g.connect(master);o.start(t);o.stop(t+.25);
+      noise(t,.05,900,.5);
+    });
+  }
+  // ding quando si apre il messaggio
+  function ding(){
+    if(!ok())return;
+    [1047,1319,1568].forEach((fr,i)=>{
+      const t=c.currentTime+.02+i*.11;
+      [1,2.01].forEach((m,j)=>{
+        const o=c.createOscillator(),g=c.createGain();
+        o.type="sine";o.frequency.value=fr*m;env(g,t,.005,j?.07:.22,1.1);
+        o.connect(g);g.connect(master);o.start(t);o.stop(t+1.3);
+      });
+    });
+  }
+  // campanellini della slitta: sonaglio metallico con ritmo di galoppo, che si sposta da un lato all'altro
+  function bells(sec,vol,dir){
+    if(!ok())return;vol=vol||1;dir=dir||1;
+    const t0=c.currentTime+.05;
+    const bus=c.createGain();bus.gain.setValueAtTime(0.0001,t0);
+    bus.gain.exponentialRampToValueAtTime(vol,t0+sec*.3);bus.gain.setValueAtTime(vol,t0+sec*.7);bus.gain.exponentialRampToValueAtTime(0.0001,t0+sec);
+    let out=bus;
+    if(c.createStereoPanner){const p=c.createStereoPanner();p.pan.setValueAtTime(-.85*dir,t0);p.pan.linearRampToValueAtTime(.85*dir,t0+sec);bus.connect(p);out=p}
+    out.connect(master);
+    const scale=[2637,3136,3520,4186,4699,5274];
+    function hit(t,v){
+      const n=5+Math.floor(Math.random()*4);
+      for(let j=0;j<n;j++){
+        const tt=t+Math.random()*.035,fr=scale[Math.floor(Math.random()*scale.length)]*(1+(Math.random()-.5)*.04),d=.2+Math.random()*.3;
+        [[1,.05],[2.32,.028],[4.17,.014]].forEach(q=>{
+          const o=c.createOscillator(),g=c.createGain();
+          o.type="sine";o.frequency.value=fr*q[0];env(g,tt,.002,q[1]*v,d);
+          o.connect(g);g.connect(bus);o.start(tt);o.stop(tt+d+.1);
+        });
+      }
+      // scintillio metallico
+      const len=Math.floor(c.sampleRate*.09),buf=c.createBuffer(1,len,c.sampleRate),ch=buf.getChannelData(0);
+      for(let i=0;i<len;i++)ch[i]=Math.random()*2-1;
+      const s=c.createBufferSource();s.buffer=buf;
+      const f=c.createBiquadFilter();f.type="highpass";f.frequency.value=6500;
+      const g=c.createGain();env(g,t,.002,.035*v,.09);
+      s.connect(f);f.connect(g);g.connect(bus);s.start(t);s.stop(t+.12);
+    }
+    const pat=[[0,.7],[.13,.6],[.27,1]];
+    for(let k=0,x=0;x<sec-.2;k++,x=k*.5+(Math.random()-.5)*.03)pat.forEach(p=>hit(t0+x+p[0],p[1]));
+  }
+  return{init,knock,ding,bells};
+})();
+window.SFX=SFX;
+
 let opened=[],prev=false;
 const SH=["tall","arch","round","wide","square","big","arch","tall","round","square","wide","arch"];
 try{opened=JSON.parse(localStorage.getItem("monica-avvento-2026")||"[]")}catch(e){}
@@ -238,7 +327,7 @@ function show(d){
   $("mt").textContent=m[1];$("mp").textContent=m[2];
   const isNew=!opened.includes(d);
   if(isNew){opened.push(d);save();$("grid").children[d-1].classList.add("open");$("count").textContent=opened.length+" / 24 aperte"}
-  setTimeout(()=>$("modal").classList.add("on"),isNew?850:0);
+  setTimeout(()=>{$("modal").classList.add("on");SFX.ding()},isNew?850:0);
 }
 $("close").onclick=()=>$("modal").classList.remove("on");
 $("modal").onclick=e=>{if(e.target.id==="modal")$("modal").classList.remove("on")};
@@ -255,7 +344,7 @@ for(let i=0;i<22;i++){const f=document.createElement("i");f.textContent=i%3?"❄
   f.style.cssText="left:"+Math.random()*100+"%;font-size:"+(10+Math.random()*14)+"px;animation-duration:"+(9+Math.random()*10)+"s;animation-delay:-"+Math.random()*15+"s";s.appendChild(f)}
 function enter(){
   const g=$("gate");if(g.classList.contains("opening"))return;
-  g.classList.add("opening");
+  g.classList.add("opening");SFX.init();SFX.knock();
   setTimeout(()=>{$("main").classList.remove("hidden");document.body.classList.remove("locked");g.classList.add("gone")},1100);
   setTimeout(()=>{g.style.display="none"},1900);
 }
@@ -283,6 +372,76 @@ for(let i=0;i<34;i++){const f=document.createElement("i");f.textContent=i%3?"❄
   f.style.cssText="left:"+Math.random()*100+"%;font-size:"+(10+Math.random()*14)+"px;animation-duration:"+(7+Math.random()*8)+"s;animation-delay:-"+Math.random()*12+"s";gs.appendChild(f)}
 $("gate").prepend(gs);
 render();
+
+/* ===== Overlay natalizi: Babbo Natale, slitta, Rudolph ===== */
+(function(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  const fx=document.createElement("div");fx.id="fx";fx.setAttribute("aria-hidden","true");document.body.appendChild(fx);
+  const R=(a,b)=>a+Math.random()*(b-a),pick=a=>a[Math.floor(Math.random()*a.length)];
+  const W=()=>innerWidth,H=()=>innerHeight;
+  const size=()=>Math.max(38,Math.min(72,W()*.11));
+  const words=["Ho ho ho!","Buon Natale!","Per Monica 🎁","Ho ho ho! 🎄","Ti amo! ❤️"];
+  function item(html,fs){const e=document.createElement("div");e.className="it";e.style.fontSize=fs+"px";e.innerHTML=html;fx.appendChild(e);return e}
+  function bubble(e,txt,x,y){const b=document.createElement("span");b.className="bub";b.textContent=txt;b.style.left=x;b.style.top=y;e.appendChild(b)}
+  function done(a,e){a.onfinish=()=>e.remove();a.oncancel=()=>e.remove()}
+
+  // Babbo Natale con slitta e renne, da sinistra o destra
+  function sleigh(){
+    const dir=Math.random()<.5?1:-1,fs=size(),y=R(70,H()*.5);
+    const e=item('<span style="display:inline-block;transform:scaleX('+(dir>0?-1:1)+')">🦌🦌<span class="sl">🛷<em>🎅</em></span></span>',fs);
+    e.style.top=y+"px";
+    const w=fs*4.2,a=dir>0?-w:W()+w,b=dir>0?W()+w:-w,kf=[];
+    for(let i=0;i<=10;i++)kf.push({transform:"translate("+(a+(b-a)*i/10)+"px,"+(Math.sin(i*1.3)*14)+"px) rotate("+(dir*Math.cos(i*1.3)*3)+"deg)"});
+    const dur=R(7000,10000);window.SFX&&SFX.bells(dur/1000,1,dir);done(e.animate(kf,{duration:dur,easing:"linear"}),e);
+  }
+  // Babbo Natale che sbuca da destra o sinistra
+  function peekSide(){
+    const left=Math.random()<.5,fs=size()*1.15,y=R(90,H()*.7),rot=left?90:-90;
+    const e=item("🎅",fs);e.style.top=y+"px";
+    if(left)e.style.left="0";else{e.style.left="auto";e.style.right="0"}
+    const out="translateX("+(left?"-110%":"110%")+") rotate("+rot+"deg)",
+          inn=(p)=>"translateX("+(left?-p:p)+"%) rotate("+rot+"deg)";
+    bubble(e,pick(words),left?"110%":"auto",left?"-8%":"-8%");
+    if(!left){const b=e.lastChild;b.style.left="auto";b.style.right="110%"}
+    e.lastChild.style.transform="rotate("+(-rot)+"deg)";
+    done(e.animate([{transform:out},{transform:inn(12),offset:.22},{transform:inn(4),offset:.34},{transform:inn(12),offset:.46},{transform:inn(4),offset:.58},{transform:inn(12),offset:.7},{transform:out}],{duration:4200,easing:"ease-in-out"}),e);
+  }
+  // Babbo Natale che sale dal basso e saluta
+  function peekBottom(){
+    const fs=size()*1.3,e=item("🎅",fs);
+    e.style.top="auto";e.style.bottom="0";e.style.left=R(8,W()-fs-20)+"px";
+    bubble(e,pick(words),"-20%","-55%");
+    const o="translateY(110%)",u=(r)=>"translateY(4%) rotate("+r+"deg)";
+    done(e.animate([{transform:o},{transform:u(0),offset:.18},{transform:u(-10),offset:.32},{transform:u(10),offset:.46},{transform:u(-10),offset:.6},{transform:u(10),offset:.74},{transform:o}],{duration:4600,easing:"ease-in-out"}),e);
+  }
+  // Rudolph che trotta (a volte salta) con il naso luminoso
+  function rudolph(){
+    const dir=Math.random()<.5?1:-1,fs=size()*1.1,e=item('<span class="rud" style="display:inline-block;transform:scaleX('+(dir>0?-1:1)+')">🦌</span>',fs);
+    e.style.top="auto";e.style.bottom="10px";
+    const a=dir>0?-fs*2:W()+fs,b=dir>0?W()+fs:-fs*2,kf=[],n=14,hop=Math.random()<.5;
+    for(let i=0;i<=n;i++){const y=hop?-Math.abs(Math.sin(i*1.1))*fs*.7:-Math.abs(Math.sin(i*2.2))*fs*.12;
+      kf.push({transform:"translate("+(a+(b-a)*i/n)+"px,"+y+"px)"})}
+    const dur=R(6000,8500);window.SFX&&SFX.bells(dur/1000,.6,dir);done(e.animate(kf,{duration:dur,easing:"linear"}),e);
+  }
+  // Pacco regalo con paracadute-palloncino
+  function gift(){
+    const fs=size()*.7,e=item("🎈🎁",fs),x=R(20,W()-fs*2.5);
+    e.style.left=x+"px";
+    const kf=[];for(let i=0;i<=10;i++)kf.push({transform:"translate("+(Math.sin(i*.9)*40)+"px,"+(-fs*2+(H()+fs*3)*i/10)+"px)"});
+    done(e.animate(kf,{duration:R(8000,11000),easing:"linear"}),e);
+  }
+
+  const acts=[sleigh,peekSide,rudolph,peekBottom,sleigh,peekSide,rudolph,gift];let last=null;
+  function run(){
+    const main=document.getElementById("main"),modal=document.getElementById("modal");
+    if(!document.hidden&&main&&!main.classList.contains("hidden")&&!modal.classList.contains("on")&&fx.children.length<2){
+      let f;do{f=pick(acts)}while(f===last);last=f;f();
+    }
+  }
+  function loop(){run();setTimeout(loop,R(6500,13000))}
+  // primo overlay poco dopo l'ingresso nella schermata delle porte
+  const t=setInterval(()=>{const m=document.getElementById("main");if(m&&!m.classList.contains("hidden")){clearInterval(t);setTimeout(()=>{run();setTimeout(loop,R(6500,11000))},1800)}},400);
+})();
 </script>
 </body>
 </html>
